@@ -15,5 +15,6 @@ Extract-Transform-Load (ETL) programs process data from sources into data wareho
 
 
 # Publications
-
-- X. Liu, C. Thomsen and T. B. Pedersen, CloudETL: Scalable Dimensional ETL for Hadoop and Hive, TR-30, Department of Computer Science, Aalborg University, 2012 (PDF).
+- X. Liu, C. Thomsen and T. B. Pedersen,CloudETL: scalable dimensional ETL for hive, In proc. of IDEAS, pp. 195-206, 2014, [PDF](https://www.researchgate.net/profile/Xiufeng_Liu2/publication/266660677_CloudETL_scalable_dimensional_ETL_for_hive/links/543a93b00cf204cab1daeefa.pdf)
+- X. Liu, C. Thomsen and T. B. Pedersen, CloudETL: Scalable Dimensional ETL for Hadoop and Hive, TR-30, Department of Computer Science, Aalborg University, 2012 [PDF](http://dbtr.cs.aau.dk/DBPublications/DBTR-30.pdf).
+- 
