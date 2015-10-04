@@ -1,0 +1,17 @@
+toplevels= 20 #40
+domains= 10 #160
+pages=100 #30000
+startyear=2000
+months=12
+changeprob=70
+#filesize=1024*1024*1024*5
+<<<<<<< .mine
+tests = 1000
+#filesize=1000*1000*1000*20
+filesize=100*1000*1000
+=======
+tests = 100 #1000
+filesize=1024*1024*1024
+>>>>>>> .r424
+
+nr_map = 4

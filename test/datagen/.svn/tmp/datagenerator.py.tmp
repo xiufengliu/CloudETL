@@ -1,0 +1,262 @@
+# A program for generating example data for "pygrametl: A Powerful Programming 
+# Framework for Extract--Transform--Load Programmers"
+
+#  
+#  Copyright (c) 2009 Christian Thomsen (chr@cs.aau.dk)
+#  
+#  This file is free software: you may copy, redistribute and/or modify it  
+#  under the terms of the GNU General Public License version 2 
+#  as published by the Free Software Foundation.
+#  
+#  This file is distributed in the hope that it will be useful, but  
+#  WITHOUT ANY WARRANTY; without even the implied warranty of  
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU  
+#  General Public License for more details.  
+#  
+#  You should have received a copy of the GNU General Public License  
+#  along with this program.  If not, see <http://www.gnu.org/licenses/>.  
+#  
+
+import random, os
+
+try:
+    from params import toplevels
+except ImportError:
+    toplevels = 15
+
+try:
+    from params import domains
+except ImportError:
+    domains = 100
+
+try:
+    from params import pages
+except ImportError:
+    pages = 100
+
+try:
+    from params import months
+except ImportError:
+    months = 12
+
+try:
+    from params import changeprob
+except ImportError:
+    changeprob = 50
+
+try:
+    from params import startyear
+except ImportError:
+    startyear = 2000
+
+try:
+    from params import tests
+except ImportError:
+    tests = 10
+
+    
+try:
+    from params import filesize
+except ImportError:
+    filesize = 5*1024*1024*1024    
+
+
+
+try:
+    from params import nr_map
+except ImportError:
+    nr_map = 1   
+
+
+
+finishedoutfiles = []
+    
+def generateurls():
+    toplevellist = ["tl%d" % (i,) for i in range(toplevels)]
+    domainlist = ["domain%d" % (i,) for i in range(domains)] # in each toplevel
+    pagelist = ["page%d.html" % (i,) for i in range(pages)]# in each domain
+
+    for t in toplevellist:
+        for d in domainlist:
+            for p in pagelist:
+                yield "http://www.%s.%s/%s" % (d, t, p)
+
+def generatedownloadlog(outfile):
+    servers = ['SomeServer/1.0', 'SomeServer/2.0', 'SuperServer/3.0']
+    cache = {}
+    rnd = random.Random()
+    rnd.seed(1) # We want to be able to recreate results
+    
+    i = 0
+    year = startyear
+    for month in range(1, months + 1):
+        urls = generateurls()
+        if month > 1 and month % 12 == 1: # It is January in a new year
+            year += 1  
+        downloaddate = "%d-%02d-01" % (year,  month % 12 == 0 and 12 or month % 12)
+        for url in urls:
+            i += 1
+            localfile = "%08d.tmp" % (i,)
+            # With probability 100 - changeprob, the page wasn't changed
+            tmp = rnd.randint(1,100)
+            if tmp <= 100 - changeprob and url in cache:
+                line = cache.get(url)
+                line[0] = localfile
+                line[4] = downloaddate
+                writeline(outfile, line)
+                continue
+            # Else simulate some changes...
+
+            # A given domain is always using the same server in this example.
+            # We extract the number in the domain and use that to determine the
+            # server.
+            tmp = int(url.split(".tl")[0].split("domain")[1])
+            server = servers[tmp % len(servers)]
+            size = rnd.randint(100, 15000)
+
+            tmp = rnd.randint(2,28)
+            if month % 12 == 1:
+                lastmoddate = "%d-12-%02d" % (year - 1, tmp)
+            elif month % 12 == 0:
+                lastmoddate = "%d-11-%02d" % (year, tmp)
+            else:
+                lastmoddate = "%d-%02d-%02d" % (year, month % 12 - 1, tmp)
+            line = [localfile, url, server, size, downloaddate, lastmoddate]
+            cache[url] = line
+            writeline(outfile, line)
+
+
+
+def generatetestresults(logfile, outfile):
+    testlist = ['Test%d' % (i,) for i in range(tests)]
+    logfile.readline() # Skip headers
+    for logline in logfile:
+        logfields = logline.split('\t')
+        localfile = logfields[0]
+        for test in testlist:
+            # We "calculate" the errors (instead of taking a random number)
+            # such that we get the same results when we consider an
+            # unchanged file
+            no1 = int(logfields[3]) # size
+            no2 = int(test.split('t')[-1])  # The test number
+            no3 = int(logfields[5].split('-')[-1]) # day af lastmoddate
+            errors = (no2 * no1) % no3
+            line = (localfile, test, errors)
+            writeline(outfile, line)
+
+            
+            
+def generatedownloadlog_onefile(outfile, filepath):
+    servers = ['SomeServer/1.0', 'SomeServer/2.0', 'SuperServer/3.0']
+    cache = {}
+    rnd = random.Random()
+    rnd.seed(1) # We want to be able to recreate results
+    
+    i = 0
+    year = startyear
+
+    for month in range(1, months + 1):
+        urls = generateurls()
+        if month > 1 and month % 12 == 1: # It is January in a new year
+            year += 1  
+        downloaddate = "%d-%02d-01" % (year, month % 12 == 0 and 12 or month % 12)
+        for url in urls:
+            i += 1
+            localfile = "%08d.tmp" % (i,)
+            # With probability 100 - changeprob, the page wasn't changed
+            tmp = rnd.randint(1,100)
+            if tmp <= 100 - changeprob and url in cache:
+                line = cache.get(url)
+                line[0] = localfile
+                line[4] = downloaddate
+                print line
+                writeline_to_file(outfile, line, filepath)
+                continue
+            # Else simulate some changes...
+
+            # A given domain is always using the same server in this example.
+            # We extract the number in the domain and use that to determine the
+            # server.
+            tmp = int(url.split(".tl")[0].split("domain")[1])
+            server = servers[tmp % len(servers)]
+            size = rnd.randint(100, 15000)
+
+            tmp = rnd.randint(2,28)
+            if month % 12 == 1:
+                lastmoddate = "%d-12-%02d" % (year - 1, tmp)
+            elif month % 12 == 0:
+                lastmoddate = "%d-11-%02d" % (year, tmp)
+            else:
+                lastmoddate = "%d-%02d-%02d" % (year, month % 12 - 1, tmp)
+            line = [localfile, url, server, size, downloaddate, lastmoddate]
+            #cache[url] = line
+
+            writeline_to_file(outfile, line, filepath)
+
+
+
+def writeline_to_file(outfiles, logline, filepaths):
+    testlist = ['Test%d' % (i,) for i in range(tests)]
+    for test in testlist:
+        no1 = int(logline[3])
+        no2 = int(test.split('t')[-1])  # The test number
+        no3 = int(logline[5].split('-')[-1]) # day af lastmoddate
+        errors = (no2 * no1) % no3
+        line = logline + [test, errors]
+        i =  hash(str(line[1])) % nr_map
+        if filepaths[i] not in finishedoutfiles:
+        	outfiles[i].write("\t".join([str(f) for f in fields]))
+		outfiles[i].write("\n")
+        	if os.path.getsize(filepaths[i])>=(filesize/nr_map):
+        		finishedoutfiles.append(filepaths[i])
+        		if len(finishedoutfiles)>=nr_map:
+        			raise Exception
+        
+def writeheader(outfiles, fields):
+	for outfile in outfiles:
+		outfile.write("\t".join([str(f) for f in fields]))
+		outfile.write("\n")
+
+def main_original():
+    downloadlog = file('DownloadLog.csv', 'w+', 16384)
+    testresults = file('TestResults.csv', 'w', 16384)
+    writeline(downloadlog, ['localfile', 'url', 'serverversion', 'size', 'downloaddate', 'lastmoddate'])
+    writeline(testresults, ['localfile', 'test', 'errors'])
+    generatedownloadlog(downloadlog)
+    downloadlog.seek(0)
+    generatetestresults(downloadlog, testresults)
+    downloadlog.close()
+    testresults.close()
+    
+def main():
+<<<<<<< .mine
+	#savedir = "/tmp" 
+	savedir = "/user/xiliu/disco/root/input"
+	filepaths =["%s/TestResults%d.csv" % (savedir, i) for i in range(nr_map)]
+	testresults = [file(filepath, 'w', 16384) for filepath in filepaths]
+	try:
+		writeheader(testresults, ['localfile', 'url', 'serverversion', 'size', 'downloaddate', 'lastmoddate','test', 'errors'])
+		generatedownloadlog_onefile(testresults, filepaths)
+	except:
+		print "Finish to generate %s : %fG" %(filepath, filesize/(1024.0*1024.0*1024.0))
+    	finally:
+    		for testresult in testresults:
+			testresult.close()
+=======
+    filepath = 'TestResults1G.csv'
+    #filepath = '/tmp/TestResults.csv'
+    #filepath = '/data2/disco/root/data/TestResults_20M.csv'
+    testresults = file(filepath, 'w', 16384)
+    try:
+        writeline(testresults, ['localfile', 'url', 'serverversion', 'size', 'downloaddate', 'lastmoddate','test', 'errors'])
+        generatedownloadlog_onefile(testresults, filepath)
+    except:
+        print "Finish to generate %s : %fG" %(filepath, filesize/(1024.0*1024.0*1024.0))
+    finally:
+        testresults.close()
+>>>>>>> .r424
+  
+
+import sys
+if __name__ == "__main__":
+    main()

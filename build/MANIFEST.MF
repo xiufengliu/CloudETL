@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Ant-Version: Apache Ant 1.8.4
+Created-By: 1.6.0_37-b06 (Sun Microsystems Inc.)
+Built-By: xiliu
+Main-Class: dk.aau.cs.cloudetl.CloudETLDriver
+Class-Path: lib/cloudetl/lib/commons-cli-1.2.jar lib/cloudetl/lib/comm
+ ons-codec-1.4.jar lib/cloudetl/lib/commons-logging-1.1.1.jar lib/clou
+ detl/lib/hadoop-common-0.21.0.jar lib/cloudetl/lib/hadoop-hdfs-0.21.0
+ .jar lib/cloudetl/lib/hadoop-mapred-0.21.0.jar lib/cloudetl/lib/hadoo
+ p-mapred-tools-0.21.0.jar lib/cloudetl/lib/log4j-1.2.15.jar
+

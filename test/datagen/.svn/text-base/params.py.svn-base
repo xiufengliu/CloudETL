@@ -1,0 +1,8 @@
+toplevels= 40 #40
+domains= 20 #160
+pages=6000 #30000
+startyear=2000
+months=100
+changeprob=10
+tests = 1000
+#filesize=1000*1000*1000*20

@@ -1,0 +1,46 @@
+#!/bin/bash
+
+WORKDIR=`pwd`
+BUILDDIR=/home/xiliu/workspace/ebuild
+DISTDIR=/home/xiliu/workspace/cloudetl/build/dist
+
+HADOOP_HOME=/q/disk_0/xiliu/hadoop-0.21.0
+JAVA_HOME=/usr/java/jdk1.6.0_29
+JAVAC=${JAVA_HOME}/bin/javac
+
+
+rm -rf  /home/xiliu/workspace/cloudetl/build/*
+
+JARS=.
+for f in ${HADOOP_HOME}/lib/*.jar ${HADOOP_HOME}/*.jar; do 
+	  JARS=${JARS}:$f
+done
+
+
+
+cd ${BUILDDIR}
+ant -Dproject=cloudetl
+
+cp ${DISTDIR}/cloudetl.jar ${HADOOP_HOME}/lib
+
+cd ${WORKDIR}
+for machine in $( cat slaves )
+do
+   scp ${DISTDIR}/cloudetl.jar ${machine}:"${HADOOP_HOME}"
+done
+
+
+cd ${WORKDIR}
+
+
+#JARS=${JARS}:${HADOOP_HOME}/lib/cloudetl.jar:${HADOOP_HOME}/conf/core-site.xml
+
+#cd ${HADOOP_HOME}/bin
+
+#${JAVA} -cp ${JARS} dk.aau.cs.cloudetl.examples.CloudETLTest
+
+#cd ${WORKDIR}
+
+
+
+

@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+
+<!-- Put site-specific property overrides in this file. -->
+<configuration>
+
+<property>
+  <name>cloudetl.home</name>
+  <value>/home/xiliu/workspace/cloudetl</value>
+</property>
+
+
+<property>
+  <name>cloudetl.hdfs.tmp</name>
+  <value>cloudetl/tmp</value>
+</property>
+
+<property>
+  <name>cloudetl.hdfs.lib</name>
+  <value>cloudetl/lib</value>
+</property>
+
+<property>
+  <name>cloudetl.lookups</name>
+  <value>lookups</value>
+</property>
+
+
+<property>
+ <name>cloudetl.meta</name>
+ <value>meta</value>
+</property>
+
+
+<property>
+ <name>cloudetl.seq.incr.delta</name>
+ <value>1000</value>
+</property>
+
+
+</configuration>
