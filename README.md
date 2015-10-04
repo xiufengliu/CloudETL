@@ -8,6 +8,7 @@ Extract-Transform-Load (ETL) programs process data from sources into data wareho
 # Installation
 
 * Environment requirements:
+
 > Java 1.6
 > Hadoop 0.21.0
 > Hive 0.8.0
