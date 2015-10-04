@@ -13,8 +13,6 @@ Extract-Transform-Load (ETL) programs process data from sources into data wareho
 > - Hadoop 0.21.0
 > - Hive 0.8.0
 
-# The example of implementing a parallel ETL for star schema:
-
 
 # Publications
 
